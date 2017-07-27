@@ -13,7 +13,7 @@ This section provides basic instructions for installing Drone using docker-compo
 
 # Start containers 
 Start the containers in the background and leaves them running.
-* `docker-compose up `
+* `docker-compose up -d`
 
 ## Stops containers
 Stops running containers without removing them
