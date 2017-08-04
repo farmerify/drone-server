@@ -7,7 +7,6 @@ services:
       - ${DRONE_PORT}:8000
     volumes:
       - "./drone:/var/lib/drone"
-      - "./workspace:/workspace"
     privileged: true
     restart: always
     environment:
@@ -23,6 +22,32 @@ services:
       - DRONE_DEBUG=${DRONE_DEBUG}
 
   drone-agent-01:
+    image: ${DRONE_DOCKER_IMAGE}
+    command: agent
+    restart: always
+    depends_on:
+      - drone-server
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DRONE_SERVER=ws://drone-server:8000/ws/broker
+      - DRONE_SECRET=${DRONE_SECRET}
+      - DRONE_DEBUG=${DRONE_DEBUG}
+
+  drone-agent-02:
+    image: ${DRONE_DOCKER_IMAGE}
+    command: agent
+    restart: always
+    depends_on:
+      - drone-server
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DRONE_SERVER=ws://drone-server:8000/ws/broker
+      - DRONE_SECRET=${DRONE_SECRET}
+      - DRONE_DEBUG=${DRONE_DEBUG}
+
+  drone-agent-03:
     image: ${DRONE_DOCKER_IMAGE}
     command: agent
     restart: always
