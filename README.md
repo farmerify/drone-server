@@ -1,15 +1,16 @@
 
-# drone-server
+# Drone-server
 This section provides basic instructions for installing Drone using docker-compose. The below configuration can be used to start the Drone server with multi-agent.
 
 ### Dependencies
 - [x] [Drne CI](https://github.com/drone/drone)
 - [x] [Docker](https://www.docker.com/)
-- [x] [Docker Compose
-](https://docs.docker.com/compose/)
+- [x] [Docker Compose](https://docs.docker.com/compose/)
 
 # Environment Variables Setting
 * `copy .env.example .env `
+
+ Modify .env conform your database setting
 
 # Start containers 
 Start the containers in the background and leaves them running.
@@ -27,7 +28,10 @@ Stops containers and removes containers, networks, volumes, and images created b
 Displays log output from services.
 * `docker-compose logs -f`
 
-# Command login drone server
+## Local use drone cli
+
+First [Install cli tool](http://docs.drone.io/cli-installation/)
+
 ```
 $ export DRONE_SERVER=http://localhost/
 $ export DRONE_TOKEN={YOUR_TOKEN}
@@ -35,3 +39,7 @@ $ drone info
 User: cutedogspark
 Email: cutedogspark@gmail.com
 ```
+
+## Contributing
+
+Contributions are most welcome! 
