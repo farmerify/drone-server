@@ -12,7 +12,7 @@ services:
     privileged: true
     restart: always
     depends_on:
-      - mariadb
+      - ${DB_HOST}
     environment:
       - DRONE_HOST=${DRONE_HOST}
       - DRONE_OPEN=${DRONE_OPEN}
@@ -24,8 +24,8 @@ services:
       - DRONE_SECRET=${DRONE_SECRET}
       - DRONE_ADMIN=${DRONE_ADMIN}
       - DRONE_DEBUG=${DRONE_DEBUG}
-      - DATABASE_DRIVER=${DB_CONNECTION}
-      - DATABASE_CONFIG=${DB_USERNAME}:${DB_PASSWORD}@tcp(${DB_HOST}:${DB_PORT})/${DB_DATABASE}?parseTime=true
+      - DRONE_DATABASE_DRIVER=${DB_DRIVER}
+      - DRONE_DATABASE_DATASOURCE=${DB_DRIVER}://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_DATABASE}?sslmode=disable
     networks:
       - backend
       - frontend
@@ -33,7 +33,8 @@ services:
 ### MariaDB Container #######################################
 
   mariadb:
-    image: mariadb:10.3
+    image: mariadb:latest
+    restart: always
     volumes:
       - ${SAVE_PATH}/mariadb:/var/lib/mysql
     ports:
@@ -43,6 +44,22 @@ services:
       - MYSQL_USER=${DB_USERNAME}
       - MYSQL_PASSWORD=${DB_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+    networks:
+      - backend
+
+### PostgreSQL Container ####################################
+  
+  postgres:
+    image: postgres:latest
+    restart: always
+    volumes:
+      - ${SAVE_PATH}/postgres:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT}:5432"
+    environment:
+      - POSTGRES_DB=${DB_DATABASE}
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
     networks:
       - backend
 
@@ -78,6 +95,21 @@ services:
       - backend
 
   drone-agent-03:
+    image: ${DRONE_DOCKER_IMAGE}
+    command: agent
+    restart: always
+    depends_on:
+      - drone-server
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DRONE_SERVER=ws://drone-server:8000/ws/broker
+      - DRONE_SECRET=${DRONE_SECRET}
+      - DRONE_DEBUG=${DRONE_DEBUG}
+    networks:
+      - backend
+
+  drone-agent-04:
     image: ${DRONE_DOCKER_IMAGE}
     command: agent
     restart: always
